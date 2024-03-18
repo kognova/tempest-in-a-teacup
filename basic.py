@@ -2,6 +2,7 @@ import anthropic
 import os
 from dotenv import load_dotenv
 import sys
+import json
 
 def load_file(file_path):
     with open(file_path, 'r') as file:
@@ -9,8 +10,9 @@ def load_file(file_path):
 
 def send_message(client, system_prompt, message_history):
     message = client.messages.create(
-        #model="claude-3-opus-20240229",
-        model="claude-3-sonnet-20240229",
+        model="claude-3-opus-20240229",
+        #model="claude-3-sonnet-20240229",
+        #model="claude-3-haiku-20240307",
         max_tokens=4000,
         temperature=0,
         system=system_prompt,
@@ -56,6 +58,7 @@ def main():
     })
 
     position = "first"
+    items = []
     for i in range(10):
         message_history.append({
             "role": "user",
@@ -67,7 +70,13 @@ def main():
             ]
         })
         message = send_message(client, system_prompt, message_history)
-        print(message.content)
+        print(message.content[0].text)
+
+        # in the text if there's an <ITEMS>[json]</ITEMS> then extract the json and append the items to the items array
+        if "<ITEMS>" in message.content[0].text:
+            json_text = message.content[0].text.split("<ITEMS>")[1].split("</ITEMS>")[0]
+            items.extend(json.loads(json_text))
+
         # if message content contains "<END>" then break
         if "<END>" in message.content[0].text:
             break
@@ -82,6 +91,8 @@ def main():
             ]
         })
         position = "next"
+    
+    print(json.dumps(items, indent=2))
 
 if __name__ == "__main__":
     main()

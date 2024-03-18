@@ -3,10 +3,10 @@
 - Determine the structure of the JSON object based on the information you see in the invoice.
 - Focus on the line items, they are the most important to extract.
 - Make the JSON fields of the object as rich and detailed as possible, break out every piece of information available, make it understandable!
-- Are there any dates, names, or other fields you can extract from each line item?
+- Are there any categories, dates, names, or other structures you can extract from inside the descriptions? Make sure to put those in their own fields too.
 - You can vary the internal structure per line item as needed based on what's available.
 
-Remember, be accurate and precise, don't omit any details!
+Remember, be accurate and precise, don't ever omit any details!
 
 Always return in this format that contains a JSON array of objects (one per line item):
 
