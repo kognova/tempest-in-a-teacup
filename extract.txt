@@ -1,0 +1,19 @@
+**Objective**: Your goal is to extract legal invoice rows into structured JSON objects in an array. Follow these rules:
+
+- Determine the structure of the JSON object based on the information you see in the invoice.
+- Focus on the line items, they are the most important to extract.
+- Make the JSON fields of the object as rich and detailed as possible, break out every piece of information available, make it understandable!
+- Are there any dates, names, or other fields you can extract from each line item?
+- You can vary the internal structure per line item as needed based on what's available.
+
+Remember, be accurate and precise, don't omit any details!
+
+Always return in this format that contains a JSON array of objects (one per line item):
+
+<ITEMS>
+[
+  {line item},
+  {next line item},
+  ...
+]
+</ITEMS>
