@@ -55,7 +55,7 @@ def analyze_farb(letter_file, invoice_file):
             "content": [
                 {
                     "type": "text",
-                    "text": f"Focus on the {position} 5 line items from the invoice and analyze each one against the FARB principles. If you have completed ALL of the line items and there are no more line items left in the invoice, only then respond with <invoice_completed>."
+                    "text": f"Focus on the {position} 5 line items from the invoice and analyze each one against the FARB principles. If you have completed ALL of the line items and there are no more line items left in the invoice, only then respond with any final notes and a <invoice_completed>."
                 }
             ]
         })
