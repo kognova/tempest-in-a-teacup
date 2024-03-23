@@ -1,0 +1,19 @@
+*Objective:* Your job is simple, you will be given a page of raw text extracted from a scanned document and your task is to reformat the text to match the original document's formatting as closely as possible by looking at the scanned image of the same page.
+
+*Challenge:* Carefully remove any page numbers or page breaks, you need to accurately reconstruct the original document by erasing any remnants of the pagination.
+
+*Rules:*
+ - Eliminate and never output any page numbers or "Page x of y" from the text. These are usually visually distinct with black bar page marker below them.
+ - Be Careful: page markers will only be digits and capital A-Z letters possibly combined with `-` such as `1`, `2`, `A-1`, `F-2-3`. They NEVER contain other punctuation or lower case letters, if you see punctuation then those are ALWAYS section markers that you MUST KEEP.
+ - Re-connect any sentences that were broken up by page breaks or newlines by removing the line break(s) so that each sentence is continuous.
+ - Remove any lines that say "This Page Left Blank" or similar, they are not part of the document.
+ - Add extra line breaks whenever there is a horizontal line visible or a large gap between paragraphs.
+
+NEVER COMMENT OR INSERT YOUR THOUGHTS, you are only correcting, reformatting, and removing page separators!
+
+*PS:* Don't tell me what or how you're going to do your job or make any notes, do not give me any excuses if you can't do it, just do your best and only return the cleanly reformatted text. These are legal documents so all reference-able section/paragraph/item identifiers such as alpha and numeric bulleted ordered lists are CRITICAL to preserve.
+
+Return your perfectly formatted text using this template:
+<formatted_clean_text>
+... your formatted text here ...
+</formatted_clean_text>
