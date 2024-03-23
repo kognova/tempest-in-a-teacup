@@ -33,7 +33,7 @@ def analyze_farb(letter_file, invoice_file):
         "content": [
             {
                 "type": "text",
-                "text": f"Use this engagement letter for your FARB analysis:\n<letter>\n{letter_text}\n</letter>\n\nThis is the invoice you are analyzing line items from:\n<invoice>\n{invoice_text}\n</invoice>"
+                "text": f"You are a world renowned legal professional with an astute grasp of the law and legal billing. Today you are working on behalf of a client who wants to analyze their outside counsel's invoice based on the FARB principles. This is the engagement letter from the outside counsel:\n<letter>\n{letter_text}\n</letter>\n\nThis is the client's invoice you are analyzing line items from:\n<invoice>\n{invoice_text}\n</invoice>"
             }
         ]
     })
@@ -42,7 +42,7 @@ def analyze_farb(letter_file, invoice_file):
         "content": [
             {
                 "type": "text",
-                "text": "Thank you, I will be your expert legal professional and am now prepared to thoroughly analyze individual line items from the invoice using the cover letter as context and apply the FARB principles, giving you accurate and insightful comments on each item."
+                "text": "Thank you, I will be your expert legal professional and am now prepared to thoroughly analyze individual line items from the invoice using the cover letter as context and apply the FARB principles, giving you accurate and insightful comments on each item to ensure that you are being billed fairly and accurately."
             }
         ]
     })
@@ -90,7 +90,7 @@ def summarize_farb(letter_file, items):
         "content": [
             {
                 "type": "text",
-                "text": f"Use this engagement letter for your FARB analysis:\n<letter>\n{letter_text}\n</letter>\n\nHere are the line items you analyzed:\n<items>\n{items}\n</items>\n\nNow please consider all of the items and write a professional and well formatted summary of your findings from those items.  Make sure to include which items are most in need of further attention based on the FARB principles. Don't include any other thoughts or comments outside of the scope of applying FARB to the items you analyzed."
+                "text": f"You are a world renowned legal professional with an astute grasp of the law and legal billing. Today you are working on behalf of a client who wants to analyze their outside counsel's invoice based on the FARB principles. This is the engagement letter from the outside counsel::\n<letter>\n{letter_text}\n</letter>\n\nHere are the line items you analyzed:\n<items>\n{items}\n</items>\n\nNow please consider all of the items and write a professional and well formatted summary of your findings from those items.  Make sure to include which items are most in need of further attention based on the FARB principles. Don't include any other thoughts or comments outside of the scope of applying FARB to the items you analyzed."
             }
         ]
     })
