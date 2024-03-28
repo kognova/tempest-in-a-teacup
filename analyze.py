@@ -1,6 +1,7 @@
 import anthropic
 from dotenv import load_dotenv
 import sys
+import time
 
 load_dotenv()
 client = anthropic.Anthropic()
@@ -9,17 +10,28 @@ def load_file(file_path):
     with open(file_path, 'r') as file:
         return file.read().strip()
 
-def send_message(system_prompt, message_history):
-    message = client.messages.create(
-        model="claude-3-opus-20240229",
-        #model="claude-3-sonnet-20240229",
-        #model="claude-3-haiku-20240307",
-        max_tokens=4000,
-        temperature=0,
-        system=system_prompt,
-        messages=message_history
-    )
-    return message.content[0].text
+def send_message(system_prompt, message_history, max_retries=3, retry_delay=60):
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            message = client.messages.create(
+                model="claude-3-opus-20240229",
+                #model="claude-3-sonnet-20240229",
+                #model="claude-3-haiku-20240307",
+                max_tokens=4000,
+                temperature=0,
+                system=system_prompt,
+                messages=message_history
+            )
+            return message.content[0].text
+        except Exception as e:
+            retry_count += 1
+            if retry_count < max_retries:
+                print(f"Request failed. Retrying in {retry_delay} seconds... (Attempt {retry_count}/{max_retries})")
+                time.sleep(retry_delay)
+            else:
+                print(f"Request failed after {max_retries} retries. Error: {str(e)}")
+                raise
 
 def analyze_farb(letter_file, invoice_file):
 

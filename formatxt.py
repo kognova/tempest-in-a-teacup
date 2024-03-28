@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 import os
 from PyPDF2 import PdfReader
 import anthropic
-
+import time
 
 load_dotenv()
-client = anthropic.Anthropic()
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 def read_text_file(file_path):
     """Reads a text file and returns its content."""
@@ -48,40 +48,50 @@ def text_pages_from_pdf(pdf_path):
         print(f"Extract error: {e}")
     return pages
 
-def send_request(encoded_image, page_text):
-
-    message = client.messages.create(
-        model="claude-3-opus-20240229",
-        #model="claude-3-sonnet-20240229",
-        #model="claude-3-haiku-20240307",
-        max_tokens=4000,
-        temperature=0,
-        system=prompt,
-        messages=[
-            {
-                "role": "user",
-                "content": [
+def send_request(encoded_image, page_text, max_retries=3, retry_delay=60):
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            message = client.messages.create(
+                model="claude-3-opus-20240229",
+                #model="claude-3-sonnet-20240229",
+                #model="claude-3-haiku-20240307",
+                max_tokens=4000,
+                temperature=0,
+                system=prompt,
+                messages=[
                     {
-                        "type": "text",
-                        "text": f"<raw_text>\n{page_text}\n</raw_Text>"
-                    },
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "image/png",
-                            "data": encoded_image
-                        }
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": f"<raw_text>\n{page_text}\n</raw_Text>"
+                            },
+                            {
+                                "type": "image",
+                                "source": {
+                                    "type": "base64",
+                                    "media_type": "image/png",
+                                    "data": encoded_image
+                                }
+                            }
+                        ]
                     }
                 ]
-            }
-        ]
-    )
-    if message.content[0].text.find("<formatted_clean_text>") > -1:
-        return message.content[0].text.split("<formatted_clean_text>")[1].split("</formatted_clean_text>")[0]
-    else:
-        print(f"Error: {message.content}")
-        return ""
+            )
+            if message.content[0].text.find("<formatted_clean_text>") > -1:
+                return message.content[0].text.split("<formatted_clean_text>")[1].split("</formatted_clean_text>")[0]
+            else:
+                print(f"Error: {message.content}")
+                return ""
+        except Exception as e:
+            retry_count += 1
+            if retry_count < max_retries:
+                print(f"Request failed. Retrying in {retry_delay} seconds... (Attempt {retry_count}/{max_retries})")
+                time.sleep(retry_delay)
+            else:
+                print(f"Request failed after {max_retries} retries. Error: {str(e)}")
+                raise
 
 
 def format_text_from_pdf(pdf_path, start_page=None, stop_page=None):

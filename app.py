@@ -85,7 +85,7 @@ def app_main():
                 if st.button('Analyze'):
                     with st.spinner("Analyzing... (this may take a while, don't close this page)"):
                         text_items = analyze_farb(letter_txt, invoice_txt)
-                        summary = summarize_farb(letter_txt, text_items)
+                        summary = summarize_farb(letter_txt, text_items).replace("$", "\\$") # Escape dollar signs
                     st.success("Analysis complete.")
                     st.markdown(summary)
                     st.write(text_items)
