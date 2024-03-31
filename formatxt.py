@@ -37,24 +37,13 @@ def convert_and_encode_pdf(pdf_path):
         encoded.append(resize_and_encode_image(image))
     return encoded
 
-def text_pages_from_pdf(pdf_path):
-    pages = []
-    try:
-        pdf_reader = PdfReader(pdf_path)
-
-        for page in pdf_reader.pages:
-            pages.append(page.extract_text())
-    except Exception as e:
-        print(f"Extract error: {e}")
-    return pages
-
-def send_request(encoded_image, page_text, max_retries=3, retry_delay=60):
+def send_request(encoded_image, max_retries=3, retry_delay=10):
     retry_count = 0
     while retry_count < max_retries:
         try:
             message = client.messages.create(
-                model="claude-3-opus-20240229",
-                #model="claude-3-sonnet-20240229",
+                #model="claude-3-opus-20240229",
+                model="claude-3-sonnet-20240229",
                 #model="claude-3-haiku-20240307",
                 max_tokens=4000,
                 temperature=0,
@@ -64,16 +53,16 @@ def send_request(encoded_image, page_text, max_retries=3, retry_delay=60):
                         "role": "user",
                         "content": [
                             {
-                                "type": "text",
-                                "text": f"<raw_text>\n{page_text}\n</raw_Text>"
-                            },
-                            {
                                 "type": "image",
                                 "source": {
                                     "type": "base64",
                                     "media_type": "image/png",
                                     "data": encoded_image
                                 }
+                            },
+                            {
+                                "type": "text",
+                                "text": f"Transcribe the text from this image and preserve all formatting. Only output the text and nothing else."
                             }
                         ]
                     }
@@ -83,7 +72,7 @@ def send_request(encoded_image, page_text, max_retries=3, retry_delay=60):
                 return message.content[0].text.split("<formatted_clean_text>")[1].split("</formatted_clean_text>")[0]
             else:
                 print(f"Error: {message.content}")
-                return ""
+                return "Error"
         except Exception as e:
             retry_count += 1
             if retry_count < max_retries:
@@ -91,20 +80,21 @@ def send_request(encoded_image, page_text, max_retries=3, retry_delay=60):
                 time.sleep(retry_delay)
             else:
                 print(f"Request failed after {max_retries} retries. Error: {str(e)}")
-                raise
+                return "Request Timeout"
 
 
 def format_text_from_pdf(pdf_path, start_page=None, stop_page=None):
     encoded_images = convert_and_encode_pdf(pdf_path)
-    text_pages = text_pages_from_pdf(pdf_path)
     responses = []
     for i, encoded_image in enumerate(encoded_images, start=1):
         if start_page and i < start_page:
             continue
         if stop_page and i > stop_page:
             break
-        #print(f"\n<<<Processing page {i} of {len(encoded_images)}>>>")
-        response = send_request(encoded_image, text_pages[i-1])
+        if start_page:
+            print(f"\n<<<Processing page {i} of {len(encoded_images)}>>>")
+        response = send_request(encoded_image)
+        response = response.rstrip()
         print(response)
         responses.append(response)
     return responses
