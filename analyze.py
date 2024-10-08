@@ -3,9 +3,10 @@ from dotenv import load_dotenv
 import sys
 import time
 import streamlit as st
+import os
 
 load_dotenv()
-client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
+client = anthropic.Anthropic(api_key=os.environ.get('api_keys'))
 
 def load_file(file_path):
     with open(file_path, 'r') as file:

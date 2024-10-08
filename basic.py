@@ -36,7 +36,7 @@ def main():
         print("ANTHROPIC_API_KEY not found in .env file.")
         sys.exit(1)
 
-    client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
+    client = anthropic.Anthropic(api_key=os.environ.get('api_keys'))
 
     message_history = []
     message_history.append({
