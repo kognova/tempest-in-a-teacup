@@ -5,4 +5,5 @@ PyPDF2
 pdf2image
 Pillow
 pdfminer.six
+PyMuPDF
 

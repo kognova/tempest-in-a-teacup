@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import logging
 from formatxt import format_text_from_pdf
 from analyze import analyze_farb, summarize_farb
 import shutil
@@ -7,6 +8,8 @@ import time
 
 # Disable Streamlit's file watcher
 os.environ['STREAMLIT_SERVER_FILE_WATCHER_TYPE'] = 'none'
+
+logging.basicConfig(level=logging.INFO)
 
 # Remove or comment out this line
 # st.write("Secrets loaded:", list(st.secrets.keys()))
@@ -82,11 +85,15 @@ def app_main():
         if not os.path.exists(text_file_path):
             if st.button('Extract Text'):
                 with st.spinner("Extracting... (this may take a while, don't close this page)"):
-                    text_pages = format_text_from_pdf(file_path)
-                    with open(text_file_path, "w") as f:
-                        for page in text_pages:
-                            f.write(page + "\n")
-                st.success(f'File "{selected_file}" extracted successfully.')
+                    try:
+                        text_pages = format_text_from_pdf(file_path)
+                        with open(text_file_path, "w") as f:
+                            for page in text_pages:
+                                f.write(page + "\n")
+                        st.success(f'File "{selected_file}" extracted successfully.')
+                    except Exception as e:
+                        st.error(f"An error occurred during extraction: {str(e)}")
+                        logging.error(f"Extraction error for {selected_file}: {str(e)}")
 
         if os.path.exists(text_file_path):
             with open(text_file_path, "r") as f:

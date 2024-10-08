@@ -10,6 +10,7 @@ import anthropic
 import time
 import traceback
 import streamlit as st
+import fitz  # PyMuPDF
 import logging
 
 load_dotenv()
@@ -35,10 +36,39 @@ def resize_and_encode_image(image, max_size=2048):
     resized_image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode('utf-8')
 
+def convert_with_pymupdf(pdf_path):
+    try:
+        logging.info(f"Attempting to open PDF with PyMuPDF: {pdf_path}")
+        doc = fitz.open(pdf_path)
+        logging.info(f"PDF opened successfully. Number of pages: {len(doc)}")
+        
+        encoded_images = []
+        for page_num, page in enumerate(doc):
+            logging.info(f"Processing page {page_num + 1}")
+            pix = page.get_pixmap()
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            buffered = BytesIO()
+            img.save(buffered, format="PNG")
+            encoded = base64.b64encode(buffered.getvalue()).decode('utf-8')
+            encoded_images.append(encoded)
+            logging.info(f"Page {page_num + 1} processed successfully")
+        
+        logging.info("PDF conversion completed successfully")
+        return encoded_images
+    except Exception as e:
+        logging.error(f"Error in convert_with_pymupdf: {str(e)}")
+        return None
+
 def convert_and_encode_pdf(pdf_path):
     try:
-        logging.info(f"Converting PDF: {pdf_path}")
-        logging.info(f"Current PATH: {os.environ.get('PATH')}")
+        logging.info(f"Attempting PDF conversion: {pdf_path}")
+        # Try PyMuPDF first
+        encoded_images = convert_with_pymupdf(pdf_path)
+        if encoded_images is not None:
+            return encoded_images
+        
+        # Fallback to pdf2image if PyMuPDF fails
+        logging.info("Falling back to pdf2image")
         images = convert_from_path(pdf_path, 300)
         encoded = []
         for image in images:
