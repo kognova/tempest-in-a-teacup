@@ -14,7 +14,7 @@ import fitz  # PyMuPDF
 import logging
 
 load_dotenv()
-client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
+client = anthropic.Anthropic(api_key=os.environ.get('api_keys'))
 
 logging.basicConfig(level=logging.INFO)
 

@@ -33,10 +33,11 @@ def verify_credentials(username, password):
     # st.write("Debug: Secrets content:", st.secrets)
     # st.write("Debug: Users:", users)
     # st.write(f"Debug: Authentication result for {username}: {result}")
-    if 'users' not in st.secrets:
+    users_str = os.environ.get('users')
+    if not users_str:
         st.error("User credentials are not set up.")
         return False
-    users = st.secrets['users']
+    users = dict(user.split(':') for user in users_str.split())
     result = username in users and users[username] == password
     return result
 
