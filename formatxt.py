@@ -10,10 +10,12 @@ import anthropic
 import time
 import traceback
 import streamlit as st
-from poppler import load_from_file
+import logging
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
+
+logging.basicConfig(level=logging.INFO)
 
 def read_text_file(file_path):
     """Reads a text file and returns its content."""
@@ -35,15 +37,15 @@ def resize_and_encode_image(image, max_size=2048):
 
 def convert_and_encode_pdf(pdf_path):
     try:
-        # Use python-poppler to load the PDF
-        pdf = load_from_file(pdf_path)
+        logging.info(f"Converting PDF: {pdf_path}")
+        logging.info(f"Current PATH: {os.environ.get('PATH')}")
         images = convert_from_path(pdf_path, 300)
         encoded = []
         for image in images:
             encoded.append(resize_and_encode_image(image))
         return encoded
     except Exception as e:
-        print(f"Error converting PDF: {str(e)}")
+        logging.error(f"Error converting PDF: {str(e)}")
         raise
 
 def send_request(encoded_image, max_retries=3, retry_delay=10):

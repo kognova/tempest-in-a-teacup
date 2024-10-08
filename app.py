@@ -2,9 +2,10 @@ import streamlit as st
 import os
 from formatxt import format_text_from_pdf
 from analyze import analyze_farb, summarize_farb
+import shutil
 
-# Add this line here
-st.write("Secrets loaded:", list(st.secrets.keys()))
+# Remove or comment out this line
+# st.write("Secrets loaded:", list(st.secrets.keys()))
 
 # Initialize session state for login status
 if 'is_logged_in' not in st.session_state:
@@ -21,14 +22,15 @@ def parse_users(users_string):
     return users_dict
 
 def verify_credentials(username, password):
-    st.write("Debug: Secrets content:", st.secrets)  # This will display the secrets
+    # Remove or comment out these lines
+    # st.write("Debug: Secrets content:", st.secrets)
+    # st.write("Debug: Users:", users)
+    # st.write(f"Debug: Authentication result for {username}: {result}")
     if 'users' not in st.secrets:
         st.error("User credentials are not set up.")
         return False
     users = st.secrets['users']
-    st.write("Debug: Users:", users)  # This will display the users
     result = username in users and users[username] == password
-    st.write(f"Debug: Authentication result for {username}: {result}")
     return result
 
 def app_main():
@@ -116,3 +118,6 @@ if __name__ == "__main__":
     # If logged in, show the management UI
     if st.session_state['is_logged_in']:
         app_main()
+
+if not shutil.which('pdftoppm'):
+    st.error("Poppler is not installed or not in PATH. Please contact the administrator.")
