@@ -3,6 +3,10 @@ import os
 from formatxt import format_text_from_pdf
 from analyze import analyze_farb, summarize_farb
 import shutil
+import time
+
+# Disable Streamlit's file watcher
+os.environ['STREAMLIT_SERVER_FILE_WATCHER_TYPE'] = 'none'
 
 # Remove or comment out this line
 # st.write("Secrets loaded:", list(st.secrets.keys()))
@@ -42,6 +46,13 @@ def app_main():
     cache_dir = f"./cache/{username}"
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
+
+    # Clean up old files in cache
+    for file in os.listdir(cache_dir):
+        file_path = os.path.join(cache_dir, file)
+        if os.path.isfile(file_path):
+            if (time.time() - os.path.getmtime(file_path)) > (24 * 3600):  # 24 hours
+                os.remove(file_path)
 
     uploaded_files = [f for f in os.listdir(cache_dir) if os.path.isfile(os.path.join(cache_dir, f))]
 
