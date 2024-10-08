@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 cache/
+tempest_env/
+__pycache__/
+*.pyc
+.streamlit/secrets.toml

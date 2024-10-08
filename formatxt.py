@@ -8,9 +8,11 @@ import os
 from PyPDF2 import PdfReader
 import anthropic
 import time
+import traceback
+import streamlit as st
 
 load_dotenv()
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
 
 def read_text_file(file_path):
     """Reads a text file and returns its content."""
@@ -42,9 +44,7 @@ def send_request(encoded_image, max_retries=3, retry_delay=10):
     while retry_count < max_retries:
         try:
             message = client.messages.create(
-                #model="claude-3-opus-20240229",
-                model="claude-3-sonnet-20240229",
-                #model="claude-3-haiku-20240307",
+                model="claude-3-5-sonnet-20240620",
                 max_tokens=4000,
                 temperature=0,
                 system=prompt,
@@ -71,17 +71,19 @@ def send_request(encoded_image, max_retries=3, retry_delay=10):
             if message.content[0].text.find("<formatted_clean_text>") > -1:
                 return message.content[0].text.split("<formatted_clean_text>")[1].split("</formatted_clean_text>")[0]
             else:
-                print(f"Error: {message.content}")
-                return "Error"
+                print(f"Error: Unexpected response format. Full response: {message.content}")
+                return "Error: Unexpected response format"
         except Exception as e:
             retry_count += 1
+            print(f"Request failed. Error: {str(e)}")
+            print("Traceback:")
+            print(traceback.format_exc())
             if retry_count < max_retries:
-                print(f"Request failed. Retrying in {retry_delay} seconds... (Attempt {retry_count}/{max_retries})")
+                print(f"Retrying in {retry_delay} seconds... (Attempt {retry_count}/{max_retries})")
                 time.sleep(retry_delay)
             else:
-                print(f"Request failed after {max_retries} retries. Error: {str(e)}")
-                return "Request Timeout"
-
+                print(f"Request failed after {max_retries} retries.")
+                return f"Request failed: {str(e)}"
 
 def format_text_from_pdf(pdf_path, start_page=None, stop_page=None):
     encoded_images = convert_and_encode_pdf(pdf_path)

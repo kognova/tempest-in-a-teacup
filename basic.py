@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 import sys
 import json
+import streamlit as st
 
 def load_file(file_path):
     with open(file_path, 'r') as file:
@@ -10,7 +11,7 @@ def load_file(file_path):
 
 def send_message(client, system_prompt, message_history):
     message = client.messages.create(
-        model="claude-3-opus-20240229",
+        model="claude-3-5-sonnet-20240620",
         #model="claude-3-sonnet-20240229",
         #model="claude-3-haiku-20240307",
         max_tokens=4000,
@@ -35,7 +36,7 @@ def main():
         print("ANTHROPIC_API_KEY not found in .env file.")
         sys.exit(1)
 
-    client = anthropic.Anthropic(api_key=api_key)
+    client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
 
     message_history = []
     message_history.append({

@@ -2,9 +2,10 @@ import anthropic
 from dotenv import load_dotenv
 import sys
 import time
+import streamlit as st
 
 load_dotenv()
-client = anthropic.Anthropic()
+client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
 
 def load_file(file_path):
     with open(file_path, 'r') as file:
@@ -15,7 +16,7 @@ def send_message(system_prompt, message_history, max_retries=3, retry_delay=60):
     while retry_count < max_retries:
         try:
             message = client.messages.create(
-                model="claude-3-opus-20240229",
+                model="claude-3-5-sonnet-20240620",
                 #model="claude-3-sonnet-20240229",
                 #model="claude-3-haiku-20240307",
                 max_tokens=4000,
