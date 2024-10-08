@@ -1,0 +1,7 @@
+streamlit
+python-dotenv
+anthropic
+PyPDF2
+pdf2image
+Pillow
+pdfminer.six
