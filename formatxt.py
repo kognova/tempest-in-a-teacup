@@ -10,6 +10,7 @@ import anthropic
 import time
 import traceback
 import streamlit as st
+from poppler import load_from_file
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=st.secrets['api_keys']['anthropic'])
@@ -33,11 +34,17 @@ def resize_and_encode_image(image, max_size=2048):
     return base64.b64encode(buffered.getvalue()).decode('utf-8')
 
 def convert_and_encode_pdf(pdf_path):
-    encoded = []
-    images = convert_from_path(pdf_path, 300)
-    for image in images:
-        encoded.append(resize_and_encode_image(image))
-    return encoded
+    try:
+        # Use python-poppler to load the PDF
+        pdf = load_from_file(pdf_path)
+        images = convert_from_path(pdf_path, 300)
+        encoded = []
+        for image in images:
+            encoded.append(resize_and_encode_image(image))
+        return encoded
+    except Exception as e:
+        print(f"Error converting PDF: {str(e)}")
+        raise
 
 def send_request(encoded_image, max_retries=3, retry_delay=10):
     retry_count = 0
