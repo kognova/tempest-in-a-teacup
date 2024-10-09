@@ -137,6 +137,3 @@ if __name__ == "__main__":
     # If logged in, show the management UI
     if st.session_state['is_logged_in']:
         app_main()
-
-if not shutil.which('pdftoppm'):
-    st.error("Poppler is not installed or not in PATH. Please contact the administrator.")
