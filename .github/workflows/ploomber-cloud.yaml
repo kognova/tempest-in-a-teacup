@@ -25,8 +25,6 @@ jobs:
       - name: Deploy
         env:
           PLOOMBER_CLOUD_KEY: ${{ secrets.PLOOMBER_CLOUD_KEY }}
-          USERS: ${{ secrets.USERS }}
-          API_KEYS: ${{ secrets.API_KEYS }}
         run: |
           ploomber-cloud deploy --watch-incremental
         # The --watch-incremental flag will print deployment status and deployment
