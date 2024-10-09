@@ -6,6 +6,5 @@
     "cpu": 0.5,
     "ram": 1,
     "gpu": 0
-  },
-  "secret-keys": ["users", "api_keys"]
+  }
 }
