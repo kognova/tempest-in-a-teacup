@@ -7,5 +7,5 @@
     "ram": 1,
     "gpu": 0
   },
-  "secret-keys": ["PLOOMBER_CLOUD_KEY", "users", "api_keys"]
+  "secret-keys": ["PLOOMBER_CLOUD_KEY"]
 }
